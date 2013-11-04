@@ -478,6 +478,27 @@ function! omni#cpp#utils#ExtractCmdFromTagItem(tagItem)
     endif
 endfunc
 
+function! omni#cpp#utils#GetSFSPTRType(tokens)
+    if len(a:tokens) < 4
+        return ""
+    endif
+
+    let ptr = 0
+    for token in a:tokens
+        if ptr == 1 && token.kind == 'cppWord'
+            " echom "Found cppWord after ptr"
+            return token.value
+        endif
+        if token.kind == 'cppWord' && token.value == 'ptr'
+            let ptr = 1
+            " echom "Found 'ptr'"
+        endif
+   endfor
+
+   return ""
+
+endfunc
+
 " Extract type from tokens.
 " eg: examples of tokens format
 "   'const MyClass&'
@@ -493,6 +514,14 @@ function! omni#cpp#utils#ExtractTypeInfoFromTokens(tokens)
     let state = 0
 
     let tokens = omni#cpp#utils#BuildParenthesisGroups(a:tokens)
+
+    let ptr_type = omni#cpp#utils#GetSFSPTRType(tokens)
+
+    " echom "ptr_type: ".ptr_type
+
+    if len(ptr_type)
+        return ptr_type
+    endif
 
     " If there is an unbalanced parenthesis we are in a parameter list
     let bParameterList = 0

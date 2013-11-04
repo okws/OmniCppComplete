@@ -636,9 +636,14 @@ function! s:LocalSearchDecl(name)
         let old_cur = getpos('.')
         normal ]}
         let new_cur = getpos('.')
+        normal %b
+        let kw = expand('<cword>')
         call setpos('.', old_cur)
-        if (new_cur[1] < lastpos[1]) || ((new_cur[1] == lastpos[1]) && (new_cur[2] < lastpos[2]))
-          continue
+
+        if kw !=? "tvars"
+            if (new_cur[1] < lastpos[1]) || ((new_cur[1] == lastpos[1]) && (new_cur[2] < lastpos[2]))
+                continue
+            endif
         endif
 
         " Check if we are a string or a comment
